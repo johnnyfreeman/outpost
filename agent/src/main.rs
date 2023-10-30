@@ -1,12 +1,12 @@
-use tokio::time::{Duration, sleep};
-use reqwest;
-use std::env;
-use tokio::spawn;
-use std::process::Stdio;
-use tokio::sync::mpsc;
-use tokio::io::{BufReader, AsyncBufReadExt};
-use serde::Deserialize;
 use anyhow::Result;
+use reqwest;
+use serde::Deserialize;
+use std::env;
+use std::process::Stdio;
+use tokio::io::{AsyncBufReadExt, BufReader};
+use tokio::spawn;
+use tokio::sync::mpsc;
+use tokio::time::{sleep, Duration};
 
 #[derive(Debug, Deserialize)]
 struct Task {
@@ -30,12 +30,18 @@ async fn main() {
         let tx = tx.clone();
 
         // TODO: this url should be configurable (env? confy?)
-        let request_url = format!("https://6537e89aa543859d1bb104a2.mockapi.io/api/v1/tasks/next?name={:?}", name);
+        let request_url = format!(
+            "https://6537e89aa543859d1bb104a2.mockapi.io/api/v1/tasks/next?name={:?}",
+            name
+        );
 
         let response = reqwest::get(&request_url).await.unwrap();
 
         if response.status().is_success() {
-            let task: Task = response.json().await.expect("Failed to deserialize task response");
+            let task: Task = response
+                .json()
+                .await
+                .expect("Failed to deserialize task response");
 
             spawn(async move {
                 process_task(task, tx).await;
