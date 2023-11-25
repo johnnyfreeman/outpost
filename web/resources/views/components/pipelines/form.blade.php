@@ -2,7 +2,7 @@
 <div class="space-y-12">
 	<div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 @4xl/main:grid-cols-3">
 		<div>
-			<h2 class="text-lg font-semibold leading-7">details</h2>
+			<h2 class="text-lg font-semibold leading-7">about</h2>
 			<p class="mt-1 leading-6 text-gray-600">this information will be displayed publicly so be careful what you share.</p>
 		</div>
 
@@ -58,72 +58,74 @@
 	</div>
 
 	<div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 @4xl/main:grid-cols-3">
-		<div>
-			<h2 class="text-lg font-semibold leading-7">personal information</h2>
-			<p class="mt-1 leading-6 text-gray-600">use a permanent address where you can receive mail.</p>
+		<div class="md:flex md:items-center md:justify-between">
+			<div class="min-w-0 flex-1">
+				<h2 class="text-lg font-semibold leading-7">steps</h2>
+				<p class="mt-1 leading-6 text-gray-600">this information will be displayed publicly so be careful what you share.</p>
+			</div>
+			<div class="mt-4 flex md:ml-4 md:mt-0">
+				<button type="button" class="inline-flex items-center bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">new</button>
+			</div>
 		</div>
 
-		<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 @sm/main:grid-cols-6 @md/main:col-span-2">
-			<div class="@sm/main:col-span-3">
-				<label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">first name</label>
+		@foreach(old('step', data_get($pipeline, 'steps', [])) as $step)
+		<div class="border border-gray-300 border-dashed p-6 space-y-4">
+			<div class="@sm/main:col-span-4">
+				<label for="name" class="block text-sm font-medium leading-6 text-gray-900">name</label>
 				<div class="mt-2">
-					<input type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
+					<div class="flex shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black @sm/main:max-w-md">
+						<input value="{{ old('name', data_get($step, 'name')) }}" type="text" name="name" id="name" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
+					</div>
 				</div>
+				@error('name')
+					<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
+				@enderror
 			</div>
 
-			<div class="@sm/main:col-span-3">
-				<label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">last name</label>
-				<div class="mt-2">
-					<input type="text" name="last-name" id="last-name" autocomplete="family-name" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
+			<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 @sm/main:grid-cols-6 @md/main:col-span-2">
+				<div class="col-span-full">
+					<label for="script" class="block text-sm font-medium leading-6 text-gray-900">script</label>
+					<div class="mt-2">
+						<textarea id="script" name="script" rows="3" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">{{ old('script', data_get($step, 'script')) }}</textarea>
+					</div>
+					@error('description')
+						<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
+					@enderror
 				</div>
 			</div>
 
 			<div class="@sm/main:col-span-4">
-				<label for="email" class="block text-sm font-medium leading-6 text-gray-900">email address</label>
+				<label for="name" class="block text-sm font-medium leading-6 text-gray-900">run on</label>
 				<div class="mt-2">
-					<input id="email" name="email" type="email" autocomplete="email" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
+					<div class="flex shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black @sm/main:max-w-md">
+						<select value="{{ old('name', data_get($step, 'name')) }}" name="name" id="name" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
+							<option>first available agent</option>
+							<option>every agent</option>
+						</select>
+					</div>
 				</div>
+				@error('name')
+					<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
+				@enderror
 			</div>
 
-			<div class="@sm/main:col-span-3">
-				<label for="country" class="block text-sm font-medium leading-6 text-gray-900">country</label>
+			<div class="@sm/main:col-span-4">
+				<label for="agent" class="block text-sm font-medium leading-6 text-gray-900">matching</label>
 				<div class="mt-2">
-					<select id="country" name="country" autocomplete="country-name" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:max-w-xs @sm/main:text-sm @sm/main:leading-6">
-						<option>united states</option>
-						<option>canada</option>
-						<option>mexico</option>
-					</select>
+					<div class="flex shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black @sm/main:max-w-md">
+						<select value="{{ old('agent', data_get($step, 'agent')) }}" name="agent" id="agent" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
+							<option>vm006</option>
+							<option>vm008</option>
+							<option>vm010</option>
+						</select>
+					</div>
 				</div>
-			</div>
-
-			<div class="col-span-full">
-				<label for="street-address" class="block text-sm font-medium leading-6 text-gray-900">street address</label>
-				<div class="mt-2">
-					<input type="text" name="street-address" id="street-address" autocomplete="street-address" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
-				</div>
-			</div>
-
-			<div class="@sm/main:col-span-2 @sm/main:col-start-1">
-				<label for="city" class="block text-sm font-medium leading-6 text-gray-900">city</label>
-				<div class="mt-2">
-					<input type="text" name="city" id="city" autocomplete="address-level2" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
-				</div>
-			</div>
-
-			<div class="@sm/main:col-span-2">
-				<label for="region" class="block text-sm font-medium leading-6 text-gray-900">state / province</label>
-				<div class="mt-2">
-					<input type="text" name="region" id="region" autocomplete="address-level1" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
-				</div>
-			</div>
-
-			<div class="@sm/main:col-span-2">
-				<label for="postal-code" class="block text-sm font-medium leading-6 text-gray-900">zip / postal code</label>
-				<div class="mt-2">
-					<input type="text" name="postal-code" id="postal-code" autocomplete="postal-code" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">
-				</div>
+				@error('name')
+					<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
+				@enderror
 			</div>
 		</div>
+		@endforeach
 	</div>
 
 	<div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 @4xl/main:grid-cols-3">

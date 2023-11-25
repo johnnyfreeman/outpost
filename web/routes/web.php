@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::redirect('/', 'pipelines')->name('home');
 
 Route::prefix('pipelines')->group(function () {
     Route::get('/', [Controllers\PipelineController::class, 'index'])->name('pipelines.index');
@@ -23,5 +24,12 @@ Route::prefix('pipelines')->group(function () {
         Route::get('/', [Controllers\PipelineController::class, 'show'])->name('pipelines.show');
         Route::get('edit', [Controllers\PipelineController::class, 'edit'])->name('pipelines.edit');
         Route::post('update', [Controllers\PipelineController::class, 'update'])->name('pipelines.update');
+        Route::post('run', [Controllers\PipelineController::class, 'run'])->name('pipelines.run');
+
+        Route::prefix('steps')->group(function () {
+            Route::prefix('{step}')->scopeBindings()->group(function () {
+                Route::post('run', [Controllers\PipelineController::class, 'runStep'])->name('pipelines.steps.run');
+            });
+        });
     });
 });

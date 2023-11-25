@@ -91,7 +91,7 @@
 		<li class="relative flex items-center space-x-4 py-6">
 			<div class="min-w-0 flex-auto">
 				<div class="flex items-center gap-x-3">
-					<x-pipelines.status />
+					<x-pipelines.status :event="$pipeline->latestEvent" />
 					<h2 class="min-w-0 font-semibold leading-6 text-black">
 						<a href="{{ route('pipelines.show', $pipeline) }}" class="flex gap-x-2">
 							<span class="truncate">{{ $pipeline->name }}</span>
