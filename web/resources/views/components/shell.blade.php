@@ -61,7 +61,7 @@
                         </button>
 
                         <!-- Profile dropdown -->
-                        <div class="relative ml-3">
+                        <div class="hidden relative ml-3">
                             <div>
                                 <button type="button" class="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                     <span class="absolute -inset-1.5"></span>

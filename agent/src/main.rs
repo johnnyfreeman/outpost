@@ -1,7 +1,12 @@
 mod api;
+mod progress;
+
 use api::{Api, ApiAction, PipelineJob, PipelineJobResponse};
 use chrono::Utc;
+use progress::initialize_progress_bars;
+use progress::Progress;
 use reqwest::StatusCode;
+use tokio::sync::mpsc::Sender;
 // use std::env;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
@@ -14,7 +19,6 @@ async fn main() {
     // TODO: Initialize tracing
 
     let (tx, mut rx) = mpsc::channel(32);
-
     spawn(async move {
         let mut api = Api::new().expect("Could not instantiate API");
 
@@ -53,8 +57,11 @@ async fn main() {
         }
     });
 
+    let progress = initialize_progress_bars();
+
     loop {
         let tx = tx.clone();
+        let progress = progress.clone();
 
         let (resp_tx, resp_rx) = oneshot::channel();
 
@@ -64,16 +71,20 @@ async fn main() {
 
         if let Some(job) = resp_rx.await.expect("Could not receive next job") {
             spawn(async move {
-                process_job(job, tx).await;
+                process_job(job, tx, progress).await;
             });
         }
     }
 }
 
-async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>) {
+async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Sender<Progress>) {
     let mut job = Box::new(job);
-    // TODO: replace this with indicatif
-    println!("{}", job.step.name);
+
+    progress
+        .send(Progress::Start(*job.clone()))
+        .await
+        .expect("Cound not start progress bar");
+
     job.started_at = Some(Utc::now());
 
     let mut child = tokio::process::Command::new("sh")
@@ -118,7 +129,36 @@ async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>) {
 
     let output = child.wait_with_output().await.unwrap();
     job.finished_at = Some(Utc::now());
-    job.exit_code = output.status.code();
+
+    match output.status.code() {
+        Some(code) => match code {
+            0 => {
+                job.exit_code = output.status.code();
+
+                progress
+                    .send(Progress::Succeed(*job.clone()))
+                    .await
+                    .expect("Cound not mark progress bar as succeeded");
+            }
+            code => {
+                job.exit_code = Some(code);
+
+                progress
+                    .send(Progress::Fail(*job.clone()))
+                    .await
+                    .expect("Cound not mark progress bar as failed");
+            }
+        },
+        None => {
+            job.exit_code = None;
+
+            progress
+                .send(Progress::Terminate(*job.clone()))
+                .await
+                .expect("Cound not mark progress bar as terminated");
+        }
+    }
+
     if tx
         .send(ApiAction::UpdatePipelineJob(job.clone()))
         .await
