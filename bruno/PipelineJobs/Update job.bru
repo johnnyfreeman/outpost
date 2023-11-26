@@ -1,0 +1,20 @@
+meta {
+  name: Update job
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/api/pipeline-jobs/{{job}}
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  output: 
+  exit_code: 0
+}

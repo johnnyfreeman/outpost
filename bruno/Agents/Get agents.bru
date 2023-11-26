@@ -1,0 +1,11 @@
+meta {
+  name: Get agents
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/api/agents
+  body: json
+  auth: none
+}

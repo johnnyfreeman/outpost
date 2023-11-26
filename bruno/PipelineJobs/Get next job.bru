@@ -1,0 +1,19 @@
+meta {
+  name: Get next job
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/api/pipeline-jobs/next
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+vars:post-response {
+  job: res.body.data?.id
+}
