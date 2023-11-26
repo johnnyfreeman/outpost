@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use dialoguer::{theme::ColorfulTheme, Input};
 use reqwest::header;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -20,8 +21,19 @@ impl Api {
         );
 
         Ok(Self {
-            id: env::var("ID").expect("ID should contain agent id"),
-            url: env::var("API_URL").unwrap_or("http://localhost/api".to_string()),
+            id: env::var("ID").unwrap_or_else(|_| {
+                Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Agent ID")
+                    .interact_text()
+                    .unwrap()
+            }),
+            url: env::var("API_URL").unwrap_or_else(|_| {
+                Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("API Url")
+                    .default("http://localhost/api".to_string())
+                    .interact_text()
+                    .unwrap()
+            }),
             client: reqwest::Client::builder()
                 .default_headers(headers)
                 .build()?,
