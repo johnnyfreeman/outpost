@@ -39,7 +39,7 @@
 
   <h2 class="mt-4 text-lg font-semibold">Jobs</h2>
   <ul class="space-y-2">
-    @foreach($pipeline->events as $event)
+    @foreach($events as $event)
       <li class="border border-dashed border-gray-900/25 px-4 py-5">
         <div class="flex items-center space-x-2">
           <x-pipelines.status :event="$event" />
@@ -78,4 +78,8 @@
       </li>
     @endforeach
   </ul>
+
+  <div class="mt-4">
+    {{ $events->links() }}
+  </div>
 </x-shell>

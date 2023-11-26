@@ -96,15 +96,13 @@ class PipelineController extends Controller
     public function show(Request $request, Pipeline $pipeline)
     {
         return view('pipelines.show', [
-            'pipeline' => $pipeline->load([
-                'events' => function (HasMany $query) {
+            'pipeline' => $pipeline,
+            'events' => $pipeline->events()->with([
+                'jobs' => function (HasMany $query) {
                     $query->orderBy('id', 'desc');
                 },
-                'events.jobs' => function (HasMany $query) {
-                    $query->orderBy('id', 'desc');
-                },
-                'events.jobs.step',
-            ]),
+                'jobs.step',
+            ])->orderByDesc('id')->paginate()
         ]);
     }
 }
