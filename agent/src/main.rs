@@ -6,18 +6,14 @@ use chrono::Utc;
 use progress::initialize_progress_bars;
 use progress::Progress;
 use reqwest::StatusCode;
-use tokio::sync::mpsc::Sender;
-// use std::env;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::spawn;
+use tokio::sync::mpsc::Sender;
 use tokio::sync::{mpsc, oneshot};
-// use tokio::time::{sleep, Duration};
 
 #[tokio::main]
 async fn main() {
-    // TODO: Initialize tracing
-
     let (tx, mut rx) = mpsc::channel(32);
     spawn(async move {
         let mut api = Api::new().expect("Could not instantiate API");
