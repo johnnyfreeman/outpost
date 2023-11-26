@@ -102,7 +102,7 @@ class PipelineController extends Controller
                     $query->orderBy('id', 'desc');
                 },
                 'jobs.step',
-            ])->orderByDesc('id')->paginate()
+            ])->orderByDesc('id')->paginate(),
         ]);
     }
 }
