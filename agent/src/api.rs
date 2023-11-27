@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use dialoguer::{theme::ColorfulTheme, Input};
 use reqwest::header;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::env;
 use tokio::sync::oneshot;
 
@@ -64,7 +65,11 @@ impl Api {
     pub async fn refresh_token(&mut self) -> anyhow::Result<()> {
         let response = self
             .client
-            .post(format!("{}/agents/{}/token", self.url, self.id))
+            .post(format!("{}/agents/token", self.url,))
+            .json(&json!({
+                "agent_id":self.id,
+                "token_name":"primary",
+            }))
             .send()
             .await?;
 
