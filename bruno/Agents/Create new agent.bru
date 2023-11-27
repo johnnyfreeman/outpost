@@ -5,15 +5,11 @@ meta {
 }
 
 post {
-  url: {{url}}/api/agents
+  url: {{url}}/agents
   body: multipartForm
   auth: none
 }
 
 body:multipart-form {
   name: testing
-}
-
-vars:post-response {
-  token: res.body.token
 }

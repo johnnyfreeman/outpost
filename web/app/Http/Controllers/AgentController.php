@@ -26,10 +26,17 @@ class AgentController extends Controller
         return new AgentResource($agent);
     }
 
-    public function createToken(Agent $agent)
+    public function createToken(Request $request)
     {
+        $validated = $this->validate($request, [
+            'agent_id' => ['required'],
+            'token_name' => ['required'],
+        ]);
+
         return [
-            'token' => $agent->createToken('primary', ['reserve-job', 'update-job'])->plainTextToken,
+            'token' => Agent::findOrFail($validated['agent_id'])
+                ->createToken($validated['token_name'], ['reserve-job', 'update-job'])
+                ->plainTextToken,
         ];
     }
 }

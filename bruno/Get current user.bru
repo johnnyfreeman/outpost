@@ -1,19 +1,15 @@
 meta {
-  name: Get next job
+  name: Get current user
   type: http
   seq: 1
 }
 
 get {
-  url: {{url}}/pipeline-jobs/next
+  url: {{url}}/user
   body: none
   auth: bearer
 }
 
 auth:bearer {
   token: {{token}}
-}
-
-vars:post-response {
-  job: res.body.data?.id
 }

@@ -5,8 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+    Route::prefix('agents')->group(function () {
+        Route::get('/', [Controllers\AgentController::class, 'index']);
+
+        Route::post('/', [Controllers\AgentController::class, 'store']);
+
+        Route::post('token', [Controllers\AgentController::class, 'createToken'])
+            ->withoutMiddleware('auth:sanctum');
     });
 
     Route::prefix('pipeline-jobs')->group(function () {
@@ -18,13 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 ->middleware('abilities:update-job');
         });
     });
-});
 
-Route::prefix('agents')->group(function () {
-    Route::get('/', [Controllers\AgentController::class, 'index']);
-    Route::post('/', [Controllers\AgentController::class, 'store']);
-
-    Route::prefix('{agent}')->group(function () {
-        Route::post('token', [Controllers\AgentController::class, 'createToken']);
+    Route::get('/user', function (Request $request) {
+        return $request->user();
     });
 });
