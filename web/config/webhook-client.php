@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\ProcessGithubWebhookJob;
+use App\Webhooks\GithubSignatureValidator;
 
 return [
     'configs' => [
@@ -8,7 +9,7 @@ return [
             'name' => 'github',
             'signing_secret' => env('GITHUB_WEBHOOK_SECRET'),
             'signature_header_name' => 'X-Hub-Signature-256',
-            'signature_validator' => \Spatie\WebhookClient\SignatureValidator\DefaultSignatureValidator::class,
+            'signature_validator' => GithubSignatureValidator::class,
             'webhook_profile' => \Spatie\WebhookClient\WebhookProfile\ProcessEverythingWebhookProfile::class,
             'webhook_response' => \Spatie\WebhookClient\WebhookResponse\DefaultRespondsTo::class,
             'webhook_model' => \Spatie\WebhookClient\Models\WebhookCall::class,
