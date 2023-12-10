@@ -7,7 +7,7 @@ return [
         [
             'name' => 'github',
             'signing_secret' => env('GITHUB_WEBHOOK_SECRET'),
-            'signature_header_name' => 'Signature',
+            'signature_header_name' => 'X-Hub-Signature-256',
             'signature_validator' => \Spatie\WebhookClient\SignatureValidator\DefaultSignatureValidator::class,
             'webhook_profile' => \Spatie\WebhookClient\WebhookProfile\ProcessEverythingWebhookProfile::class,
             'webhook_response' => \Spatie\WebhookClient\WebhookResponse\DefaultRespondsTo::class,
