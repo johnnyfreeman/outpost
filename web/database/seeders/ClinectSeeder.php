@@ -20,6 +20,16 @@ class ClinectSeeder extends Seeder
         ]);
 
         $pipeline->steps()->create([
+            'name' => 'Check test code coverage diff',
+            'script' => 'echo "Checking code coverage of the PR diff..."',
+        ]);
+
+        $pipeline->steps()->create([
+            'name' => 'Check test code coverage total',
+            'script' => 'echo "Checking code coverage of the entire repo after merge..."',
+        ]);
+
+        $pipeline->steps()->create([
             'name' => 'Format code',
             'script' => 'vendor/bin/pint',
         ]);
