@@ -28,3 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 });
+
+Route::prefix('webhooks')->group(function () {
+    Route::webhooks('github', 'github');
+});
