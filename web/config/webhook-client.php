@@ -14,7 +14,7 @@ return [
             'webhook_response' => \Spatie\WebhookClient\WebhookResponse\DefaultRespondsTo::class,
             'webhook_model' => \Spatie\WebhookClient\Models\WebhookCall::class,
             'store_headers' => [
-
+                'X-GitHub-Event',
             ],
             'process_webhook_job' => ProcessGithubWebhookJob::class,
         ],
