@@ -25,7 +25,6 @@ Route::get('/auth/callback', function () {
         'github_refresh_token' => $githubUser->refreshToken,
     ]);
 
-    dd($user);
     Auth::login($user);
  
     return redirect('/');
