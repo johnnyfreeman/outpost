@@ -8,7 +8,7 @@ use Laravel\Socialite\Facades\Socialite;
  
 Route::get('/auth/redirect', function () {
     return Socialite::driver('github')->redirect();
-});
+})->name('login');
  
 Route::get('/auth/callback', function () {
     $githubUser = Socialite::driver('github')->user();
@@ -29,8 +29,6 @@ Route::get('/auth/callback', function () {
  
     return redirect('/');
 });
-
-Route::view('login', 'auth.login')->name('login');
 
 Route::middleware('auth')->group(function () {
     Route::redirect('/', 'pipelines')->name('home');
