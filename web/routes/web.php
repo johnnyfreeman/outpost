@@ -30,7 +30,7 @@ Route::get('/auth/callback', function () {
     return redirect('/');
 });
 
-Route::view('login', 'auth.login');
+Route::view('login', 'auth.login')->name('login');
 
 Route::middleware('auth')->group(function () {
     Route::redirect('/', 'pipelines')->name('home');
