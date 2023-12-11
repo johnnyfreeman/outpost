@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->ulid();
             $table->string('name');
+            $table->string('avatar');
             $table->string('github_id');
             $table->string('github_token');
             $table->string('github_refresh_token');

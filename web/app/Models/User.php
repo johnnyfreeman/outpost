@@ -23,6 +23,7 @@ class User extends Model implements
 
     protected $fillable = [
         'name',
+        'avatar',
         'github_id',
         'github_token',
         'github_refresh_token',
@@ -36,5 +37,10 @@ class User extends Model implements
     public function getKeyName()
     {
         return 'ulid';
+    }
+
+    public function getRememberTokenName(): null
+    {
+    	return null;
     }
 }
