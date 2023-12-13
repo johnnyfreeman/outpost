@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('agents')->group(function () {
-        Route::get('/', [Controllers\AgentController::class, 'index']);
+        Route::get('/', [Controllers\Api\AgentController::class, 'index']);
 
-        Route::post('/', [Controllers\AgentController::class, 'store']);
+        Route::post('/', [Controllers\Api\AgentController::class, 'store']);
 
-        Route::post('token', [Controllers\AgentController::class, 'createToken'])
+        Route::post('token', [Controllers\Api\AgentController::class, 'createToken'])
             ->withoutMiddleware('auth:sanctum');
     });
 

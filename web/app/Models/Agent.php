@@ -22,4 +22,10 @@ class Agent extends Model implements AuthenticatableContract, AuthorizableContra
     protected $fillable = [
         'name',
     ];
+
+    // TODO: implement agent pings
+    public function isOnline(): bool
+    {
+        return true;
+    }
 }

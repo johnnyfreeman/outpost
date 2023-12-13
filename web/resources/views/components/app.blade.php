@@ -30,9 +30,8 @@
                         <i class="fa-sharp fa-regular fa-flag-swallowtail fa-xl"></i>
                     </a>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-                        <a href="{{ route('pipelines.index') }}" class="inline-flex items-center border-b-2 border-black px-1 pt-1 text-sm font-medium text-gray-900">Pipelines</a>
-                        <a href="{{ url('api/agents') }}" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">Agents</a>
+                        <x-main-menu.link :href="route('pipelines.index')" :active="Route::is('pipelines.*')">Pipelines</x-main-menu.link>
+                        <x-main-menu.link :href="route('agents.index')" :active="Route::is('agents.*')">Agents</x-main-menu.link>
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
