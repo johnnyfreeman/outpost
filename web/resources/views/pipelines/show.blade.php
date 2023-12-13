@@ -21,23 +21,25 @@
         </div>
 
         <h2 class="mt-4 text-lg font-semibold">Steps</h2>
-        <ul>
-            @foreach($pipeline->steps as $step)
-            <li class="flex items-center space-x-2">
-                <div>{{ $step->name }}</div>
-                <form action="{{ route('pipelines.steps.run', ['pipeline' => $pipeline, 'step' => $step]) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
-                        <span class="sr-only">play</span>
-                        <i class="fa-sharp fa-regular fa-play"></i>
-                    </button>
-                </form>
-            </li>
-            @endforeach
-        </ul>
+        <div class="mt-2">
+            <ul class="flex flex-wrap -mt-2 -ml-2">
+                @foreach($pipeline->steps as $step)
+                <li class="flex items-center space-x-2 border border-dashed border-gray-900/25 whitespace-nowrap px-4 h-12 ml-2 mt-2">
+                    <div>{{ $step->name }}</div>
+                    <form action="{{ route('pipelines.steps.run', ['pipeline' => $pipeline, 'step' => $step]) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+                            <span class="sr-only">play</span>
+                            <i class="fa-sharp fa-regular fa-play"></i>
+                        </button>
+                    </form>
+                </li>
+                @endforeach
+            </ul>
+        </div>
 
         <h2 class="mt-4 text-lg font-semibold">Jobs</h2>
-        <ul class="space-y-2">
+        <ul class="mt-2 space-y-2">
             @foreach($events as $event)
             <li class="border border-dashed border-gray-900/25 px-4 py-5">
                 <div class="flex items-center space-x-2">
