@@ -19,25 +19,10 @@
                 @foreach($agent->tokens as $token)
                 <li class="flex items-center space-x-2 border border-dashed border-gray-900/25 whitespace-nowrap px-4 h-12 ml-2 mt-2">
                     <div>{{ $token->name }}</div>
+                    <div>{{ $token->last_used_at }}</div>
                 </li>
                 @endforeach
             </ul>
-        </div>
-
-        <h2 class="mt-4 text-lg font-semibold">pings</h2>
-        <ul class="mt-2 space-y-2">
-            @foreach($pings as $ping)
-            <li class="border border-dashed border-gray-900/25 px-4 py-5">
-                <div class="flex items-center space-x-2">
-                    <x-agents.status :agent="$agent" />
-                    <span>{{ $ping->getKey() }}</span>
-                </div>
-            </li>
-            @endforeach
-        </ul>
-
-        <div class="mt-4">
-            {{-- $pings->links() --}}
         </div>
     </x-app>
 </x-shell>

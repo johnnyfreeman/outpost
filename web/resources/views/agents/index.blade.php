@@ -101,13 +101,18 @@
 						</h2>
 					</div>
 					<div class="mt-1 flex items-center gap-x-2.5 text-sm leading-5 text-gray-500">
+						<p class="whitespace-nowrap">{{ $agent->getKey() }}</p>
 						<svg viewBox="0 0 2 2" class="h-0.5 w-0.5 flex-none fill-gray-300">
 							<circle cx="1" cy="1" r="1" />
 						</svg>
-						<p class="whitespace-nowrap">Initiated 1m 32s ago</p>
+						<p class="whitespace-nowrap">Created {{ $agent->created_at->diffForHumans() }}</p>
 					</div>
 				</div>
-				<div class="rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset text-gray-400 bg-gray-400/10 ring-gray-400/20">Preview</div>
+
+				@if($agent->isOnline())
+					<div class="flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset text-green-700 bg-green-400/10 ring-green-400/20">online</div>
+				@endif
+
 				<i class="fa-sharp fa-regular fa-chevron-right fa-sm text-gray-400 group-hover:text-gray-500"></i>
 			</li>
 			@endforeach

@@ -11,6 +11,7 @@ class AgentController extends Controller
     {
         return view('agents.index', [
             'agents' => Agent::query()
+                ->with(['lastUsedToken'])
                 ->orderBy('id')
                 ->paginate(),
         ]);

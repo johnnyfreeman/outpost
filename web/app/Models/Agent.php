@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\Sanctum;
 
 class Agent extends Model implements AuthenticatableContract, AuthorizableContract
 {
@@ -23,9 +24,18 @@ class Agent extends Model implements AuthenticatableContract, AuthorizableContra
         'name',
     ];
 
-    // TODO: implement agent pings
+    public function lastUsedToken()
+    {
+        return $this->morphOne(Sanctum::$personalAccessTokenModel, 'tokenable')
+            ->ofMany('last_used_at');
+    }
+
     public function isOnline(): bool
     {
-        return true;
+        if (! $token = $this->lastUsedToken) {
+            return false;
+        }
+
+        return $token->last_used_at->isAfter(now()->subMinutes(5));
     }
 }
