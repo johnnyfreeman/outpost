@@ -8,7 +8,10 @@
 		</div>
 
 		<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-			<a href="{{ route('auth.redirect') }}" class="flex items-center justify-center bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">Login with Github</a>
+			<a href="{{ route('auth.redirect') }}" class="flex items-center justify-center space-x-2 bg-black px-3 h-12 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+				<i class="fa-brands fa-github-alt fa-lg"></i>
+				<span>Login with Github</span>
+			</a>
 
 			<p class="mt-10 text-center text-sm text-gray-500">
 				Not a member?
