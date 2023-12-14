@@ -12,7 +12,7 @@ use App\Events\PipelineJobReserved;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class PipelineJobTests extends TestCase
+class PipelineJobTest extends TestCase
 {
     use RefreshDatabase;
 

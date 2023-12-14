@@ -8,7 +8,7 @@ use App\Models\PipelineStep;
 use App\Models\GithubSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class GithubWebhookTests extends TestCase
+class GithubWebhookTest extends TestCase
 {
     use RefreshDatabase;
 
