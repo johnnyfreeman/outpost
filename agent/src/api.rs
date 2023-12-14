@@ -45,7 +45,7 @@ impl Api {
     pub async fn get_next_job(&self) -> anyhow::Result<reqwest::Response> {
         Ok(self
             .client
-            .get(format!("{}/pipeline-jobs/next", self.url))
+            .post(format!("{}/pipeline-jobs/reserve", self.url))
             .bearer_auth(self.token.clone())
             .send()
             .await?)

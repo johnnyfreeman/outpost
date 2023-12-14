@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\PipelineJobResource;
 use App\Models\PipelineJob;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use App\Events\PipelineJobStarted;
 use Illuminate\Support\Facades\DB;
+use App\Events\PipelineJobFinished;
+use App\Events\PipelineJobReserved;
+use Illuminate\Database\Eloquent\Builder;
+use App\Http\Resources\PipelineJobResource;
+use Illuminate\Contracts\Events\Dispatcher;
 
 class PipelineJobController extends Controller
 {
-    public function next(Request $request)
+    public function reserve(Request $request)
     {
         return DB::transaction(function () use ($request) {
             if ($job = PipelineJob::lockForUpdate()
@@ -27,6 +31,8 @@ class PipelineJobController extends Controller
                     'agent_id' => $request->user()->getKey(),
                 ]);
 
+                event(new PipelineJobReserved($job));
+
                 return new PipelineJobResource($job->load(['event.pipeline', 'step']));
             }
 
@@ -34,7 +40,7 @@ class PipelineJobController extends Controller
         });
     }
 
-    public function update(Request $request, PipelineJob $job): PipelineJobResource
+    public function update(Request $request, PipelineJob $job, Dispatcher $dispatcher): PipelineJobResource
     {
         $validated = $this->validate($request, [
             'output' => ['nullable'],
@@ -45,6 +51,14 @@ class PipelineJobController extends Controller
         ]);
 
         $job->fill($validated)->save();
+
+        if ($job->wasChanged('started_at')) {
+            $dispatcher->dispatch(new PipelineJobStarted($job));
+        }
+
+        if ($job->wasChanged('finished_at')) {
+            $dispatcher->dispatch(new PipelineJobFinished($job));
+        }
 
         return new PipelineJobResource($job);
     }

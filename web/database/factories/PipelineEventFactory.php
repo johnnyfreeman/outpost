@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Pipeline;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PipelineExecution>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PipelineEvent>
  */
 class PipelineEventFactory extends Factory
 {
@@ -17,7 +18,7 @@ class PipelineEventFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'pipeline_id' => Pipeline::factory(),
         ];
     }
 }

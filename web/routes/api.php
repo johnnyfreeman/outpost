@@ -15,11 +15,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('pipeline-jobs')->group(function () {
-        Route::get('next', [Controllers\PipelineJobController::class, 'next'])
+        Route::post('reserve', [Controllers\PipelineJobController::class, 'reserve'])
+            ->name('api.pipeline-jobs.reserve')
             ->middleware('abilities:reserve-job');
 
         Route::prefix('{job}')->group(function () {
             Route::post('/', [Controllers\PipelineJobController::class, 'update'])
+                ->name('api.pipeline-jobs.update')
                 ->middleware('abilities:update-job');
         });
     });
