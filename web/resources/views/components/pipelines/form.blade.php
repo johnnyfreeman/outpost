@@ -1,4 +1,4 @@
-@props(['pipeline' => null])
+@props(['pipeline' => new App\Models\Pipeline])
 <div class="space-y-12">
 	<div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 @4xl/main:grid-cols-3">
 		<div>
