@@ -32,11 +32,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'github_refresh_token',
     ];
 
-    public function getKeyName()
-    {
-        return 'ulid';
-    }
-
     public function getRememberTokenName(): null
     {
         return null;

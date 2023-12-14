@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,5 +34,22 @@ class Pipeline extends Model
         return $this->hasOne(PipelineEvent::class)
             ->latestOfMany();
 
+    }
+
+    public function githubSettings(): HasOne
+    {
+        return $this->hasOne(GithubSetting::class);
+
+    }
+
+    public function run(string $description = null): Collection
+    {
+        $event = $this->events()->create([
+            'description' => $description,
+        ]);
+
+        return $this->steps->map(fn ($step) => $step->jobs()->create([
+            'pipeline_event_id' => $event->getKey(),
+        ]));
     }
 }

@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('github_settings', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->unique();
             $table->foreignUlid('pipeline_id')->references('id')->on('pipelines');
             $table->boolean('trigger_on_push')->default(false);
             $table->boolean('filter_enabled')->default(false);

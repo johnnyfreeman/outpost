@@ -68,59 +68,59 @@
 			</div>
 		</div>
 
-		@foreach(old('step', data_get($pipeline, 'steps', [])) as $step)
+		@foreach(old('step', data_get($pipeline, 'steps', [])) as $i => $step)
 		<div class="border border-gray-300 border-dashed p-6 space-y-4">
 			<div class="@sm/main:col-span-4">
-				<label for="name" class="block text-sm font-medium leading-6 text-gray-900">name</label>
+				<label for="steps.{{ $i }}.run_on" class="block text-sm font-medium leading-6 text-gray-900">name</label>
 				<div class="mt-2">
 					<div class="flex shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black @sm/main:max-w-md">
-						<input value="{{ old('name', data_get($step, 'name')) }}" type="text" name="name" id="name" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
+						<input value="{{ old('steps.'.$i.'.name', data_get($step, 'name')) }}" type="text" name="steps[{{ $i }}][name]" id="steps.{{ $i }}.name" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
 					</div>
 				</div>
-				@error('name')
+				@error('steps.'.$i.'.name')
 					<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
 				@enderror
 			</div>
 
 			<div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 @sm/main:grid-cols-6 @md/main:col-span-2">
 				<div class="col-span-full">
-					<label for="script" class="block text-sm font-medium leading-6 text-gray-900">script</label>
+					<label for="steps.{{ $i }}.script" class="block text-sm font-medium leading-6 text-gray-900">script</label>
 					<div class="mt-2">
-						<textarea id="script" name="script" rows="3" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">{{ old('script', data_get($step, 'script')) }}</textarea>
+						<textarea id="steps.{{ $i }}.script" name="steps[{{ $i }}][script]" rows="3" class="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black @sm/main:text-sm @sm/main:leading-6">{{ old('steps.'.$i.'.script', data_get($step, 'script')) }}</textarea>
 					</div>
-					@error('description')
+					@error('steps.'.$i.'.script')
 						<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
 					@enderror
 				</div>
 			</div>
 
 			<div class="@sm/main:col-span-4">
-				<label for="name" class="block text-sm font-medium leading-6 text-gray-900">run on</label>
+				<label for="steps.{{ $i }}.run_on" class="block text-sm font-medium leading-6 text-gray-900">run on</label>
 				<div class="mt-2">
 					<div class="flex shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black @sm/main:max-w-md">
-						<select value="{{ old('name', data_get($step, 'name')) }}" name="name" id="name" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
+						<select value="{{ old('name', data_get($step, 'name')) }}" name="steps[{{ $i }}][run_on]" id="steps.{{ $i }}.run_on" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
 							<option>first available agent</option>
 							<option>every agent</option>
 						</select>
 					</div>
 				</div>
-				@error('name')
+				@error('steps.'.$i.'.run_on')
 					<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
 				@enderror
 			</div>
 
 			<div class="@sm/main:col-span-4">
-				<label for="agent" class="block text-sm font-medium leading-6 text-gray-900">matching</label>
+				<label for="steps.{{ $i }}.agent" class="block text-sm font-medium leading-6 text-gray-900">matching</label>
 				<div class="mt-2">
 					<div class="flex shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black @sm/main:max-w-md">
-						<select value="{{ old('agent', data_get($step, 'agent')) }}" name="agent" id="agent" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
+						<select value="{{ old('agent', data_get($step, 'agent')) }}" name="steps[{{ $i }}][agent]" id="steps.{{ $i }}.agent" class="block flex-1 border-0 bg-transparent py-1.5 px-2.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 @sm/main:text-sm @sm/main:leading-6">
 							<option>vm006</option>
 							<option>vm008</option>
 							<option>vm010</option>
 						</select>
 					</div>
 				</div>
-				@error('name')
+				@error('steps.'.$i.'.run_on')
 					<p class="mt-3 text-sm leading-6 text-red-600">{{ $message }}</p>
 				@enderror
 			</div>
@@ -130,58 +130,22 @@
 
 	<div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 @4xl/main:grid-cols-3">
 		<div>
-			<h2 class="text-lg font-semibold leading-7">notifications</h2>
-			<p class="mt-1 leading-6 text-gray-600">we'll always let you know about important changes, but you pick what else you want to hear about.</p>
+			<h2 class="text-lg font-semibold leading-7">github</h2>
+			<p class="mt-1 leading-6 text-gray-600">these settings determine what events will trigger this pipeline, and also how pipeline status updates will be reported back to github.</p>
 		</div>
 
 		<div class="max-w-2xl space-y-10 @md/main:col-span-2">
 			<fieldset>
-				<legend class="text-sm font-semibold leading-6 text-gray-900">by email</legend>
+				<legend class="text-sm font-semibold leading-6 text-gray-900">triggered by</legend>
 				<div class="mt-6 space-y-6">
 					<div class="relative flex gap-x-3">
 						<div class="flex h-6 items-center">
-							<input id="comments" name="comments" type="checkbox" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
+							<input @checked($pipeline->githubSettings?->trigger_on_push) id="trigger_on_push" name="trigger_on_push" type="checkbox" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
 						</div>
 						<div class="text-sm leading-6">
-							<label for="comments" class="font-medium text-gray-900">comments</label>
-							<p class="text-gray-500">get notified when someones posts a comment on a posting.</p>
+							<label for="trigger_on_push" class="font-medium text-gray-900">trigger on push</label>
+							<p class="text-gray-500">run this pipeline when code is pushed to github.</p>
 						</div>
-					</div>
-					<div class="relative flex gap-x-3">
-						<div class="flex h-6 items-center">
-							<input id="candidates" name="candidates" type="checkbox" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
-						</div>
-						<div class="text-sm leading-6">
-							<label for="candidates" class="font-medium text-gray-900">candidates</label>
-							<p class="text-gray-500">get notified when a candidate applies for a job.</p>
-						</div>
-					</div>
-					<div class="relative flex gap-x-3">
-						<div class="flex h-6 items-center">
-							<input id="offers" name="offers" type="checkbox" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
-						</div>
-						<div class="text-sm leading-6">
-							<label for="offers" class="font-medium text-gray-900">offers</label>
-							<p class="text-gray-500">get notified when a candidate accepts or rejects an offer.</p>
-						</div>
-					</div>
-				</div>
-			</fieldset>
-			<fieldset>
-				<legend class="text-sm font-semibold leading-6 text-gray-900">push notifications</legend>
-				<p class="mt-1 leading-6 text-gray-600">these are delivered via sms to your mobile phone.</p>
-				<div class="mt-6 space-y-6">
-					<div class="flex items-center gap-x-3">
-						<input id="push-everything" name="push-notifications" type="radio" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
-						<label for="push-everything" class="block text-sm font-medium leading-6 text-gray-900">everything</label>
-					</div>
-					<div class="flex items-center gap-x-3">
-						<input id="push-email" name="push-notifications" type="radio" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
-						<label for="push-email" class="block text-sm font-medium leading-6 text-gray-900">same as email</label>
-					</div>
-					<div class="flex items-center gap-x-3">
-						<input id="push-nothing" name="push-notifications" type="radio" class="h-4 w-4 border-gray-300 text-black focus:ring-black">
-						<label for="push-nothing" class="block text-sm font-medium leading-6 text-gray-900">no push notifications</label>
 					</div>
 				</div>
 			</fieldset>

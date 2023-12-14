@@ -13,6 +13,10 @@ class PipelineEvent extends Model
     use HasFactory;
     use HasUlids;
 
+    protected $fillable = [
+        'description',
+    ];
+
     public function pipeline(): BelongsTo
     {
         return $this->belongsTo(Pipeline::class);

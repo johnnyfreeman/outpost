@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\GithubSetting>
  */
-class PipelineStepFactory extends Factory
+class GithubSettingFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,7 @@ class PipelineStepFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word(),
+            //
         ];
     }
 }

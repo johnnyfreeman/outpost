@@ -12,6 +12,8 @@ class GithubSetting extends Model
     use HasFactory;
     use HasUlids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'pipeline_id',
         'trigger_on_push',

@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->ulid();
+            $table->ulid('id')->unique();
             $table->string('name');
             $table->string('avatar');
             $table->string('github_id');

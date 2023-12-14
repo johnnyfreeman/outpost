@@ -28,6 +28,10 @@ class PipelineController extends Controller
 
         $pipeline = Pipeline::create($data);
 
+        $pipeline->githubSettings()->updateOrCreate([], [
+            'trigger_on_push' => $request->boolean('trigger_on_push'),
+        ]);
+
         return to_route('pipelines.show', $pipeline)
             ->with('success', [
                 'pipeline created!',
@@ -44,6 +48,10 @@ class PipelineController extends Controller
 
         $pipeline->fill($data)->save();
 
+        $pipeline->githubSettings()->updateOrCreate([], [
+            'trigger_on_push' => $request->boolean('trigger_on_push'),
+        ]);
+
         return to_route('pipelines.show', $pipeline)
             ->with('success', [
                 'pipeline updated!',
@@ -53,11 +61,7 @@ class PipelineController extends Controller
 
     public function run(Request $request, Pipeline $pipeline)
     {
-        $event = $pipeline->events()->create();
-
-        $pipeline->steps->map(fn ($step) => $step->jobs()->create([
-            'pipeline_event_id' => $event->getKey(),
-        ]));
+        $pipeline->run();
 
         return to_route('pipelines.show', $pipeline)
             ->with('success', [
