@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use App\Models\GithubSetting;
 use Illuminate\Support\Collection;
-use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 use Symfony\Component\HttpFoundation\HeaderBag;
+use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 
 class ProcessGithubWebhookJob extends ProcessWebhookJob
 {

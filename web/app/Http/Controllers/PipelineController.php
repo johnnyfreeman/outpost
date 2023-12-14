@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pipeline;
 use App\Models\PipelineStep;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PipelineController extends Controller
 {

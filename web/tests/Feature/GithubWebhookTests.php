@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\GithubSetting;
+use Tests\TestCase;
 use App\Models\Pipeline;
 use App\Models\PipelineStep;
+use App\Models\GithubSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class GithubWebhookTests extends TestCase
 {
