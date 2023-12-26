@@ -10,7 +10,6 @@ use App\Events\PipelineJobFinished;
 use App\Events\PipelineJobReserved;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\PipelineJobResource;
-use Illuminate\Contracts\Events\Dispatcher;
 
 class PipelineJobController extends Controller
 {
@@ -40,7 +39,7 @@ class PipelineJobController extends Controller
         });
     }
 
-    public function update(Request $request, PipelineJob $job, Dispatcher $dispatcher): PipelineJobResource
+    public function update(Request $request, PipelineJob $job): PipelineJobResource
     {
         $validated = $this->validate($request, [
             'output' => ['nullable'],
@@ -53,11 +52,11 @@ class PipelineJobController extends Controller
         $job->fill($validated)->save();
 
         if ($job->wasChanged('started_at')) {
-            $dispatcher->dispatch(new PipelineJobStarted($job));
+            PipelineJobStarted::dispatch($job);
         }
 
         if ($job->wasChanged('finished_at')) {
-            $dispatcher->dispatch(new PipelineJobFinished($job));
+            PipelineJobFinished::dispatch($job);
         }
 
         return new PipelineJobResource($job);
