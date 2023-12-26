@@ -17,9 +17,9 @@
         <div class="mt-2">
             <ul class="flex flex-wrap -mt-2 -ml-2">
                 @foreach($agent->tokens as $token)
-                <li class="flex items-center space-x-2 border border-dashed border-gray-900/25 whitespace-nowrap px-4 h-12 ml-2 mt-2">
-                    <div>{{ $token->name }}</div>
-                    <div>{{ $token->last_used_at }}</div>
+                <li class="flex items-center bg-gray-50 whitespace-nowrap h-10 ml-2 mt-2">
+                    <div class="flex items-center bg-gray-100 px-2 h-10 text-gray-500">{{ $token->name }}</div>
+                    <div class="px-2">{{ $token->last_used_at }}</div>
                 </li>
                 @endforeach
             </ul>
