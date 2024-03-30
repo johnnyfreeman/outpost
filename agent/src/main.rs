@@ -1,21 +1,20 @@
 mod api;
 mod progress;
 
+use anyhow::Result;
 use api::{Api, ApiAction, PipelineJob, PipelineJobResponse};
 use chrono::Utc;
-use progress::initialize_progress_bars;
-use progress::Progress;
+use progress::ProgressManager;
 use reqwest::StatusCode;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::spawn;
-use tokio::sync::mpsc::Sender;
 use tokio::sync::{mpsc, oneshot};
 
 #[tokio::main]
 async fn main() {
     let (tx, mut rx) = mpsc::channel(32);
-    spawn(async move {
+
+    tokio::spawn(async move {
         let mut api = Api::new().expect("Could not instantiate API");
 
         while let Some(action) = rx.recv().await {
@@ -53,7 +52,7 @@ async fn main() {
         }
     });
 
-    let progress = initialize_progress_bars();
+    let progress = ProgressManager::new();
 
     loop {
         let tx = tx.clone();
@@ -66,20 +65,21 @@ async fn main() {
             .expect("Could not send ApiAction::GetNextPipelineJob");
 
         if let Some(job) = resp_rx.await.expect("Could not receive next job") {
-            spawn(async move {
+            tokio::spawn(async move {
                 process_job(job, tx, progress).await;
             });
         }
     }
 }
 
-async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Sender<Progress>) {
+async fn process_job(
+    job: PipelineJob,
+    tx: mpsc::Sender<ApiAction>,
+    progress: ProgressManager,
+) -> Result<()> {
     let mut job = Box::new(job);
 
-    progress
-        .send(Progress::Start(*job.clone()))
-        .await
-        .expect("Cound not start progress bar");
+    progress.start(*job.clone()).await?;
 
     job.started_at = Some(Utc::now());
 
@@ -88,12 +88,11 @@ async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Se
         .arg(&job.step.script.clone())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .spawn()
-        .expect("Failed to execute command");
+        .spawn()?;
 
     if let Some(stdout) = child.stdout.take() {
         let mut lines = BufReader::new(stdout).lines();
-        while let Some(line) = lines.next_line().await.unwrap() {
+        while let Some(line) = lines.next_line().await? {
             job.append_output(&line);
 
             if tx
@@ -109,7 +108,7 @@ async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Se
 
     if let Some(stderr) = child.stderr.take() {
         let mut lines = BufReader::new(stderr).lines();
-        while let Some(line) = lines.next_line().await.unwrap() {
+        while let Some(line) = lines.next_line().await? {
             job.append_output(&line);
 
             if tx
@@ -123,7 +122,7 @@ async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Se
         }
     }
 
-    let output = child.wait_with_output().await.unwrap();
+    let output = child.wait_with_output().await?;
     job.finished_at = Some(Utc::now());
 
     match output.status.code() {
@@ -131,27 +130,18 @@ async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Se
             0 => {
                 job.exit_code = output.status.code();
 
-                progress
-                    .send(Progress::Succeed(*job.clone()))
-                    .await
-                    .expect("Cound not mark progress bar as succeeded");
+                progress.success(*job.clone()).await?;
             }
             code => {
                 job.exit_code = Some(code);
 
-                progress
-                    .send(Progress::Fail(*job.clone()))
-                    .await
-                    .expect("Cound not mark progress bar as failed");
+                progress.fail(*job.clone()).await?;
             }
         },
         None => {
             job.exit_code = None;
 
-            progress
-                .send(Progress::Terminate(*job.clone()))
-                .await
-                .expect("Cound not mark progress bar as terminated");
+            progress.terminate(*job.clone()).await?;
         }
     }
 
@@ -162,4 +152,6 @@ async fn process_job(job: PipelineJob, tx: mpsc::Sender<ApiAction>, progress: Se
     {
         eprintln!("Failed to send output line");
     }
+
+    Ok(())
 }
