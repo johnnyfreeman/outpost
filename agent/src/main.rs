@@ -1,82 +1,41 @@
 mod api;
 mod progress;
+mod queue;
 
 use anyhow::Result;
-use api::{Api, ApiAction, PipelineJob, PipelineJobResponse};
+use api::PipelineJob;
 use chrono::Utc;
 use progress::ProgressManager;
-use reqwest::StatusCode;
+use queue::Queue;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::sync::{mpsc, oneshot};
 
 #[tokio::main]
 async fn main() {
-    let (tx, mut rx) = mpsc::channel(32);
-
-    tokio::spawn(async move {
-        let mut api = Api::new().expect("Could not instantiate API");
-
-        while let Some(action) = rx.recv().await {
-            match action {
-                ApiAction::GetNextPipelineJob { tx } => {
-                    let response = api
-                        .get_next_job()
-                        .await
-                        .expect("Could not retrieve next job");
-
-                    match response.status() {
-                        StatusCode::OK => {
-                            tx.send(
-                                response
-                                    .json::<PipelineJobResponse>()
-                                    .await
-                                    .expect("Could not transform json into PipelineJobResponse")
-                                    .data,
-                            )
-                            .expect("Could not send next job back");
-                        }
-                        StatusCode::UNAUTHORIZED => {
-                            api.refresh_token().await.expect("Could not refresh token");
-                            tx.send(None).expect("Could not send next job back");
-                        }
-                        _ => {
-                            tx.send(None).expect("Could not send next job back");
-                        }
-                    }
-                }
-                ApiAction::UpdatePipelineJob(job) => {
-                    api.update_job(*job).await.expect("Could not update job");
-                }
-            }
-        }
-    });
-
+    let queue = Queue::new();
     let progress = ProgressManager::new();
 
     loop {
-        let tx = tx.clone();
+        let queue = queue.clone();
         let progress = progress.clone();
-
-        let (resp_tx, resp_rx) = oneshot::channel();
-
-        tx.send(ApiAction::GetNextPipelineJob { tx: resp_tx })
-            .await
-            .expect("Could not send ApiAction::GetNextPipelineJob");
-
-        if let Some(job) = resp_rx.await.expect("Could not receive next job") {
-            tokio::spawn(async move {
-                process_job(job, tx, progress).await;
-            });
+        match queue.next().await {
+            Ok(job) => {
+                if let Some(job) = job {
+                    tokio::spawn(async move {
+                        process_job(job, queue, progress)
+                            .await
+                            .expect("Could not process job");
+                    });
+                }
+            }
+            Err(err) => {
+                eprintln!("Queue failed getting next job");
+            }
         }
     }
 }
 
-async fn process_job(
-    job: PipelineJob,
-    tx: mpsc::Sender<ApiAction>,
-    progress: ProgressManager,
-) -> Result<()> {
+async fn process_job(job: PipelineJob, queue: Queue, progress: ProgressManager) -> Result<()> {
     let mut job = Box::new(job);
 
     progress.start(*job.clone()).await?;
@@ -95,11 +54,7 @@ async fn process_job(
         while let Some(line) = lines.next_line().await? {
             job.append_output(&line);
 
-            if tx
-                .send(ApiAction::UpdatePipelineJob(job.clone()))
-                .await
-                .is_err()
-            {
+            if queue.update(*job.clone()).await.is_err() {
                 eprintln!("Failed to send output line");
                 break;
             }
@@ -111,11 +66,7 @@ async fn process_job(
         while let Some(line) = lines.next_line().await? {
             job.append_output(&line);
 
-            if tx
-                .send(ApiAction::UpdatePipelineJob(job.clone()))
-                .await
-                .is_err()
-            {
+            if queue.update(*job.clone()).await.is_err() {
                 eprintln!("Failed to send output line");
                 break;
             }
@@ -145,11 +96,7 @@ async fn process_job(
         }
     }
 
-    if tx
-        .send(ApiAction::UpdatePipelineJob(job.clone()))
-        .await
-        .is_err()
-    {
+    if queue.update(*job.clone()).await.is_err() {
         eprintln!("Failed to send output line");
     }
 

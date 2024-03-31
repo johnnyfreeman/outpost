@@ -85,7 +85,7 @@ pub enum ApiAction {
     GetNextPipelineJob {
         tx: oneshot::Sender<Option<PipelineJob>>,
     },
-    UpdatePipelineJob(Box<PipelineJob>),
+    UpdatePipelineJob(PipelineJob),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
