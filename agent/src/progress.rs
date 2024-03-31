@@ -1,13 +1,10 @@
-use std::collections::BTreeMap;
-
 use crate::api::PipelineJob;
 use anyhow::Result;
 use console::style;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
-use std::sync::Arc;
+use std::collections::BTreeMap;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::Sender;
-use tokio::task::JoinHandle;
 use tokio::time::Duration;
 
 pub enum Progress {
@@ -15,19 +12,20 @@ pub enum Progress {
     Succeed(PipelineJob),
     Fail(PipelineJob),
     Terminate(PipelineJob),
+    ShutdownStart,
+    ShutdownFinish,
 }
 
 #[derive(Clone)]
 pub struct ProgressManager {
     tx: Sender<Progress>,
-    handle: Arc<JoinHandle<()>>,
 }
 
 impl ProgressManager {
     pub fn new() -> Self {
         let (tx, mut rx) = mpsc::channel(32);
 
-        let handle = tokio::spawn(async move {
+        tokio::spawn(async move {
             let multiprogress = MultiProgress::new();
 
             let spinner_style =
@@ -87,14 +85,36 @@ impl ProgressManager {
                         multiprogress.remove(progress);
                         map.remove(&job.id);
                     }
+                    Progress::ShutdownStart => {
+                        let progress = multiprogress.add(ProgressBar::new_spinner());
+                        progress.enable_steady_tick(Duration::from_millis(64));
+                        progress.set_style(spinner_style.clone());
+                        progress.set_prefix("shutdown".to_string());
+                        progress.set_message("Gracefully shutting down...".to_string());
+                        map.insert("shutdown".to_string(), progress.clone());
+                    }
+                    Progress::ShutdownFinish => {
+                        multiprogress
+                            .println(&format!(
+                                "{} {} {}",
+                                style("shutdown").bold().dim(),
+                                style("✓").green(),
+                                "Gracefully shut down",
+                            ))
+                            .expect("Could not print line");
+                        let progress = map.get("shutdown").expect("Count not find ProgressBar");
+                        progress.finish_and_clear();
+                        multiprogress.remove(progress);
+                        map.remove("shutdown");
+                        break;
+                    }
                 }
             }
+
+            // println!("Progress has been shutdown");
         });
 
-        Self {
-            tx,
-            handle: Arc::new(handle),
-        }
+        Self { tx }
     }
 
     pub async fn start(&self, job: PipelineJob) -> Result<()> {
@@ -114,6 +134,16 @@ impl ProgressManager {
 
     pub async fn terminate(&self, job: PipelineJob) -> Result<()> {
         self.tx.send(Progress::Terminate(job)).await?;
+        Ok(())
+    }
+
+    pub async fn start_shutdown(&self) -> Result<()> {
+        self.tx.send(Progress::ShutdownStart).await?;
+        Ok(())
+    }
+
+    pub async fn finish_shutdown(&self) -> Result<()> {
+        self.tx.send(Progress::ShutdownFinish).await?;
         Ok(())
     }
 }

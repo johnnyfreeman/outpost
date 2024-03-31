@@ -107,7 +107,7 @@ pub struct PipelineJob {
     pub exit_code: Option<i32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub reserved_at: DateTime<Utc>,
+    pub reserved_at: Option<DateTime<Utc>>,
     pub started_at: Option<DateTime<Utc>>,
     pub finished_at: Option<DateTime<Utc>>,
 }
