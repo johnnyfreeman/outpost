@@ -68,7 +68,7 @@ impl Api {
             .post(format!("{}/agents/token", self.url,))
             .json(&json!({
                 "agent_id":self.id,
-                "token_name":"primary",
+                "token_name":"bearer",
             }))
             .send()
             .await?;
