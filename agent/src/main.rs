@@ -6,6 +6,7 @@ mod queue;
 use job_processor::JobProcessor;
 use progress::ProgressManager;
 use queue::Queue;
+use std::time::Duration;
 use tokio::signal;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
@@ -21,8 +22,8 @@ async fn main() {
         let progress = progress.clone();
         let cancellation_token = cancellation_token.clone();
         tokio::select! {
-            next_job_response = queue.next() => {
-                match next_job_response {
+            job = queue.next() => {
+                match job {
                     Ok(job) => {
                         match job {
                             Some(job) => {
@@ -32,7 +33,7 @@ async fn main() {
                                 });
                             }
                             None => {
-                                // do nothing
+                                tokio::time::sleep(Duration::from_secs(3)).await;
                             }
                         }
                     }
