@@ -48,7 +48,7 @@ class PipelineJob extends Model
 
     public function isComplete(): bool
     {
-        return ! is_null($this->exit_code);
+        return !is_null($this->exit_code);
     }
 
     public function isFailure(): bool

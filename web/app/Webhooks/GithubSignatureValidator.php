@@ -13,7 +13,7 @@ class GithubSignatureValidator implements SignatureValidator
     {
         $signature = $request->header($config->signatureHeaderName);
 
-        if (! $signature) {
+        if (!$signature) {
             return false;
         }
 

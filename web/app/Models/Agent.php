@@ -32,7 +32,7 @@ class Agent extends Model implements AuthenticatableContract, AuthorizableContra
 
     public function isOnline(): bool
     {
-        if (! $token = $this->lastUsedToken) {
+        if (!$token = $this->lastUsedToken) {
             return false;
         }
 
