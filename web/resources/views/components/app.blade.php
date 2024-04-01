@@ -100,7 +100,7 @@
 </nav>
 
 <div class="px-4 sm:px-6 md:px-8">
-    <div class="@container/main max-w-3xl mx-auto">
+    <div class="@container/main max-w-5xl mx-auto">
         <div>{{ $slot }}</div>
 
 
