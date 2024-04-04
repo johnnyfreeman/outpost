@@ -89,6 +89,7 @@ impl JobProcessor {
         //         }
         //     }
         // }
+        eprintln!("Output: {:?}", job);
 
         // let output = child.wait_with_output().await?;
         job.finished_at = Some(Utc::now());
