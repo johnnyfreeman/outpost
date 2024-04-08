@@ -90,7 +90,7 @@ impl ProgressManager {
                         progress.enable_steady_tick(Duration::from_millis(64));
                         progress.set_style(spinner_style.clone());
                         progress.set_prefix("shutdown".to_string());
-                        progress.set_message("Gracefully shutting down...".to_string());
+                        progress.set_message("Graceful shutdown signal received...".to_string());
                         map.insert("shutdown".to_string(), progress.clone());
                     }
                     Progress::ShutdownFinish => {
