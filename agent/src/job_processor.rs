@@ -1,56 +1,28 @@
 use crate::api::PipelineJob;
-use crate::progress::ProgressManager;
 use crate::queue::Queue;
-use anyhow::Result;
+use anyhow::{Error, Result};
 use chrono::Utc;
-use std::process::Stdio;
-use tokio::io::{AsyncBufReadExt, BufReader};
+// use std::process::Stdio;
+// use tokio::io::{AsyncBufReadExt, BufReader};
 
 pub struct JobProcessor {
+    pub job: PipelineJob,
     queue: Queue,
-    progress: ProgressManager,
 }
 
 impl JobProcessor {
-    pub fn new(queue: Queue, progress: ProgressManager) -> Self {
-        Self { queue, progress }
+    pub fn new(job: PipelineJob, queue: Queue) -> Self {
+        Self { job, queue }
     }
 
-    pub async fn handle(&self, mut job: PipelineJob) -> Result<()> {
-        self.progress.start(job.clone()).await?;
+    pub async fn handle(&mut self) -> Result<Option<i32>> {
+        self.job.started_at = Some(Utc::now());
+        self.queue.update(self.job.clone()).await?;
 
-        job.started_at = Some(Utc::now());
-
-        for line in job.step.script.clone().lines() {
+        for line in self.job.step.script.clone().lines() {
             if let Some((command, args)) =
                 line.split_whitespace().collect::<Vec<&str>>().split_first()
             {
-                let output = tokio::process::Command::new(command)
-                    .args(args)
-                    .output()
-                    .await?;
-
-                job.append_output(&String::from_utf8(output.stdout)?);
-                job.append_output(&String::from_utf8(output.stderr)?);
-
-                match output.status.code() {
-                    Some(code) => match code {
-                        0 => {
-                            job.exit_code = output.status.code();
-
-                            self.progress.success(job.clone()).await?;
-                        }
-                        code => {
-                            job.exit_code = Some(code);
-
-                            self.progress.fail(job.clone()).await?;
-                        }
-                    },
-                    None => {
-                        job.exit_code = None;
-
-                        self.progress.terminate(job.clone()).await?;
-                    }
                 let mut command = tokio::process::Command::new(command);
                 command.args(args);
                 if let Some(path) = &self.job.step.current_directory {
@@ -58,12 +30,13 @@ impl JobProcessor {
                 }
                 let output = command.output().await?;
 
-                if self.queue.update(job.clone()).await.is_err() {
-                    eprintln!("Failed to send output line");
-                    break;
-                }
+                self.job.append_output(&String::from_utf8(output.stdout)?);
+                self.job.append_output(&String::from_utf8(output.stderr)?);
+                self.job.exit_code = output.status.code();
+                self.queue.update(self.job.clone()).await?;
             }
         }
+
         // let mut child = tokio::process::Command::new("sh")
         //     .arg("-c")
         //     .arg(&job.step.script.clone())
@@ -94,15 +67,19 @@ impl JobProcessor {
         //         }
         //     }
         // }
-        eprintln!("Output: {:?}", job);
 
         // let output = child.wait_with_output().await?;
-        job.finished_at = Some(Utc::now());
+        self.job.finished_at = Some(Utc::now());
+        self.queue.update(self.job.clone()).await?;
 
-        if self.queue.update(job.clone()).await.is_err() {
-            eprintln!("Failed to send output line");
-        }
+        Ok(self.job.exit_code)
+    }
 
+    pub async fn failed(&mut self, error: Error) -> Result<()> {
+        self.job.append_output(&error.to_string());
+        self.job.exit_code = Some(1);
+        self.job.finished_at = Some(Utc::now());
+        self.queue.update(self.job.clone()).await?;
         Ok(())
     }
 }

@@ -1,22 +1,54 @@
 use crate::api::{Api, ApiAction, PipelineJob, PipelineJobResponse};
 use anyhow::Result;
 use reqwest::StatusCode;
-use tokio::sync::{
-    mpsc::{self, Sender},
-    oneshot,
+use tokio::{
+    sync::{
+        mpsc::{self, Sender},
+        oneshot,
+    },
+    task::JoinHandle,
 };
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 #[derive(Clone)]
 pub struct Queue {
+    cancellation_token: CancellationToken,
+    tracker: TaskTracker,
     tx: Sender<ApiAction>,
 }
 
 impl Queue {
-    pub fn new(tracker: TaskTracker, cancellation_token: CancellationToken) -> Self {
-        let (tx, mut rx) = mpsc::channel(32);
+    pub fn new() -> Self {
+        let (tx, _rx) = mpsc::channel(32);
+        Self {
+            cancellation_token: CancellationToken::new(),
+            tracker: TaskTracker::new(),
+            tx,
+        }
+    }
 
-        tracker.spawn(async move {
+    pub async fn next(&self) -> Result<Option<PipelineJob>> {
+        let (resp_tx, resp_rx) = oneshot::channel();
+
+        self.tx
+            .send(ApiAction::GetNextPipelineJob { tx: resp_tx })
+            .await?;
+
+        Ok(resp_rx.await?)
+    }
+
+    pub async fn update(&self, job: PipelineJob) -> Result<()> {
+        self.tx.send(ApiAction::UpdatePipelineJob(job)).await?;
+
+        Ok(())
+    }
+
+    pub fn spawn(&mut self) -> JoinHandle<()> {
+        let (tx, mut rx) = mpsc::channel(32);
+        self.tx = tx;
+        let cancellation_token = self.cancellation_token.child_token();
+
+        self.tracker.spawn(async move {
             let mut api = Api::new().expect("Could not instantiate API");
 
             loop {
@@ -71,24 +103,13 @@ impl Queue {
             }
 
             // println!("Queue has been shutdown");
-        });
-
-        Self { tx }
+        })
     }
 
-    pub async fn next(&self) -> Result<Option<PipelineJob>> {
-        let (resp_tx, resp_rx) = oneshot::channel();
-
-        self.tx
-            .send(ApiAction::GetNextPipelineJob { tx: resp_tx })
-            .await?;
-
-        Ok(resp_rx.await?)
-    }
-
-    pub async fn update(&self, job: PipelineJob) -> Result<()> {
-        self.tx.send(ApiAction::UpdatePipelineJob(job)).await?;
-
+    pub async fn shutdown(&self) -> Result<()> {
+        self.tracker.close();
+        self.cancellation_token.cancel();
+        self.tracker.wait().await;
         Ok(())
     }
 }
