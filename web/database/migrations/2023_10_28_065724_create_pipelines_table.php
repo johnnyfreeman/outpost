@@ -31,7 +31,9 @@ return new class extends Migration {
             $table->ulid('id')->unique();
             $table->foreignUlid('pipeline_id')->references('id')->on('pipelines');
             $table->string('name');
-            $table->longText('script')->nullable();
+            $table->longText('env')->nullable();
+            $table->string('current_directory')->nullable();
+            $table->longText('script');
             $table->timestampsTz();
         });
 
