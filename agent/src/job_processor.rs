@@ -51,7 +51,12 @@ impl JobProcessor {
 
                         self.progress.terminate(job.clone()).await?;
                     }
+                let mut command = tokio::process::Command::new(command);
+                command.args(args);
+                if let Some(path) = &self.job.step.current_directory {
+                    command.current_dir(tokio::fs::canonicalize(path).await?);
                 }
+                let output = command.output().await?;
 
                 if self.queue.update(job.clone()).await.is_err() {
                     eprintln!("Failed to send output line");

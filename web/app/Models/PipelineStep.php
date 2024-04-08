@@ -15,6 +15,8 @@ class PipelineStep extends Model
 
     protected $fillable = [
         'name',
+        'env',
+        'current_directory',
         'script',
     ];
 

@@ -126,6 +126,8 @@ pub struct PipelineStep {
     pub id: String,
     pub pipeline_id: String,
     pub name: String,
+    pub env: Option<String>,
+    pub current_directory: Option<String>,
     pub script: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
