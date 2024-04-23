@@ -8,7 +8,7 @@
 		</div>
 
 		<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-			<a href="{{ route('auth.redirect') }}" class="flex items-center justify-center space-x-2 bg-black px-3 h-12 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+			<a hx-boost="false" href="{{ route('auth.redirect') }}" class="flex items-center justify-center space-x-2 bg-black px-3 h-12 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
 				<i class="fa-brands fa-github-alt fa-lg"></i>
 				<span>Login with Github</span>
 			</a>
