@@ -1,4 +1,6 @@
-<nav class="bg-white shadow">
+<nav {{ $attributes->class([
+    'bg-white shadow',
+]) }}>
     <div class="px-4 sm:px-6 md:px-8">
         <div class="">
             <div class="relative flex h-16 justify-between">

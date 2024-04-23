@@ -39,43 +39,48 @@
         </div>
 
         <h2 class="mt-4 text-lg font-semibold">Jobs</h2>
-        <ul class="mt-2 space-y-2">
+        <ul class="mt-2 space-y-4">
             @foreach($events as $event)
-            <li class="border border-dashed border-gray-900/25 px-4 py-5">
-                <div class="flex items-center space-x-2">
+            <li class="border border-gray-900/2">
+                <div class="flex items-center space-x-2 border-b border-gray-900/2 p-6 text-sm text-gray-800">
                     <x-pipelines.status :event="$event" />
                     <span>{{ $event->getKey() }}</span>
                 </div>
 
-                @foreach($event->jobs as $job)
-                <details class="mt-4 space-y-2">
-                    <summary class="flex items-center justify-between space-x-4">
-                        <div>
-                            <h3 class="font-semibold">
-                                {{ $job->step->name }}
-                            </h3>
+                <div class="divide-y divide-gray-900/2">
+                    @foreach($event->jobs as $job)
+                        <details class="space-y-2 p-6" {{ $loop->parent->first ? 'open' : '' }}>
+                            <summary class="flex items-center justify-between space-x-4 select-none">
+                                <div>
+                                    <h3 class="font-semibold">
+                                        {{ $job->step->name }}
+                                    </h3>
 
-                            @if(is_null($job->agent_id))
-                            <span class="bg-gray-100 text-gray-900">waiting</span>
-                            <span>for {{ $job->created_at->diffForHumans() }}</span>
-                            @elseif(is_null($job->exit_code))
-                            <span class="bg-blue-100 text-blue-900">processing</span>
-                            <span>for {{ $job->reserved_at->diffForHumans() }}</span>
-                            @elseif($job->exit_code === 0)
-                            <span class="bg-green-100 text-green-900">succeeded</span>
-                            <span>after {{ $job->started_at->diffForHumans($job->finished_at, \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}</span>
-                            @else
-                            <span class="bg-red-100 text-red-900">failed</span>
-                            <span>after {{ $job->started_at->diffForHumans($job->finished_at, \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}</span>
-                            @endif
-                        </div>
+                                    @if(is_null($job->agent_id))
+                                        <span class="bg-gray-100 text-gray-900">waiting</span>
+                                        <span>for {{ $job->created_at->diffForHumans() }}</span>
+                                    @elseif(!$job->isComplete())
+                                        <span class="bg-blue-100 text-blue-900">processing</span>
+                                        <span>on <a href="{{ route('agents.show', $job->agent) }}" class="text-blue-800 no-underline">{{ $job->agent->name }}</a></span>
+                                        <span>for {{ $job->reserved_at->diffForHumans() }}</span>
+                                    @elseif($job->isSuccess())
+                                        <span class="bg-green-100 text-green-900">succeeded</span>
+                                        <span>on <a href="{{ route('agents.show', $job->agent) }}" class="text-blue-800 no-underline">{{ $job->agent->name }}</a></span>
+                                        <span>after {{ $job->started_at->diffForHumans($job->finished_at, \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}</span>
+                                    @else
+                                        <span class="bg-red-100 text-red-900">failed</span>
+                                        <span>on <a href="{{ route('agents.show', $job->agent) }}" class="text-blue-800 no-underline">{{ $job->agent->name }}</a></span>
+                                        <span>after {{ $job->started_at->diffForHumans($job->finished_at, \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}</span>
+                                    @endif
+                                </div>
 
-                        <div class="text-gray-500"><i class="fa-sharp fa-regular fa-chevron-down"></i></div>
-                    </summary>
+                                <div class="text-gray-400"><i class="fa-sharp fa-regular fa-chevron-down"></i></div>
+                            </summary>
 
-                </details>
-                @endforeach
                             <pre class="bg-gray-100 text-black p-6 overflow-x-scroll">{{ highlight($job->output, 'cargo') }}</pre>
+                        </details>
+                    @endforeach
+                </div>
             </li>
             @endforeach
         </ul>

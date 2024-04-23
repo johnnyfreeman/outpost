@@ -36,14 +36,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $pipeline->steps()->create([
-            'name' => 'Run tests',
-            'script' => <<<'SCRIPT'
-                cd ../web
-                php artisan test
-                SCRIPT,
-        ]);
-
-        $pipeline->steps()->create([
             'name' => 'Info',
             'script' => <<<'SCRIPT'
                 pwd
