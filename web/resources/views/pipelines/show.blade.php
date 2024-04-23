@@ -73,9 +73,9 @@
                         <div class="text-gray-500"><i class="fa-sharp fa-regular fa-chevron-down"></i></div>
                     </summary>
 
-                    <pre class="bg-black text-white">{{ $job->output }}</pre>
                 </details>
                 @endforeach
+                            <pre class="bg-gray-100 text-black p-6 overflow-x-scroll">{{ highlight($job->output, 'cargo') }}</pre>
             </li>
             @endforeach
         </ul>
