@@ -5,7 +5,6 @@ namespace App\Highlighter;
 use Tempest\Highlight\IsPattern;
 use Tempest\Highlight\Pattern;
 use Tempest\Highlight\Tokens\TokenType;
-use Tempest\Highlight\Tokens\TokenTypeEnum;
 
 final readonly class HelpPattern implements Pattern
 {
@@ -18,6 +17,6 @@ final readonly class HelpPattern implements Pattern
 
     public function getTokenType(): TokenType
     {
-        return TokenTypeEnum::PROPERTY;
+        return ConsoleTokenTypeEnum::HELP;
     }
 }

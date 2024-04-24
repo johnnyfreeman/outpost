@@ -30,6 +30,9 @@ class CargoLanguage extends BaseLanguage
             ...parent::getPatterns(),
             new WarningPattern,
             new HelpPattern,
+            new FinishedPattern,
+            new NotePattern,
+            new GutterPattern,
         ];
     }
 }

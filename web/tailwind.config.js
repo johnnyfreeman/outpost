@@ -8,6 +8,7 @@ export default {
     "./resources/js/**/*.js",
     "./app/View/Components/**/*.php",
     "./vendor/laravel/**/*.blade.php",
+    "./app/Highlighter/ConsoleTokenTypeEnum.php",
   ],
   theme: {
     extend: {
