@@ -45,6 +45,7 @@
                 <div class="flex items-center space-x-2 border-b border-gray-900/2 p-6 text-sm text-gray-800">
                     <x-pipelines.status :event="$event" />
                     <span>{{ $event->getKey() }}</span>
+                    <span>{{ $event->description }}</span>
                 </div>
 
                 <div class="divide-y divide-gray-900/2">
