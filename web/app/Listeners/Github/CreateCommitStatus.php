@@ -41,8 +41,8 @@ class CreateCommitStatus implements ShouldQueue
     {
         $jwt = JWT::encode([
             'iss' => config('services.github.id'),
-            'iat' => now(),
-            'exp' => now()->addMinutes(5),
+            'iat' => now()->timestamp,
+            'exp' => now()->addMinutes(5)->timestamp,
         ], config('services.github.private_key'), 'RS256');
 
         Log::debug('Generating JWT', [
