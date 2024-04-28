@@ -45,7 +45,7 @@
                 <div class="flex items-center space-x-2 border-b border-gray-900/2 p-6 text-sm text-gray-800">
                     <x-pipelines.status :event="$event" />
                     <span>{{ $event->getKey() }}</span>
-                    <span>{{ $event->description }}</span>
+                    <x-link :href="$event->url">{{ $event->description }}</x-link>
                 </div>
 
                 <div class="divide-y divide-gray-900/2">
@@ -62,15 +62,15 @@
                                         <span>for {{ $job->created_at->diffForHumans() }}</span>
                                     @elseif(!$job->isComplete())
                                         <span class="bg-blue-100 text-blue-900">processing</span>
-                                        <span>on <a href="{{ route('agents.show', $job->agent) }}" class="text-blue-800 no-underline">{{ $job->agent->name }}</a></span>
+                                        <span>on <x-link :href="route('agents.show', $job->agent)">{{ $job->agent->name }}</x-link></span>
                                         <span>for {{ $job->reserved_at->diffForHumans() }}</span>
                                     @elseif($job->isSuccess())
                                         <span class="bg-green-100 text-green-900">succeeded</span>
-                                        <span>on <a href="{{ route('agents.show', $job->agent) }}" class="text-blue-800 no-underline">{{ $job->agent->name }}</a></span>
+                                        <span>on <x-link :href="route('agents.show', $job->agent)">{{ $job->agent->name }}</x-link></span>
                                         <span>after {{ $job->started_at->diffForHumans($job->finished_at, \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}</span>
                                     @else
                                         <span class="bg-red-100 text-red-900">failed</span>
-                                        <span>on <a href="{{ route('agents.show', $job->agent) }}" class="text-blue-800 no-underline">{{ $job->agent->name }}</a></span>
+                                        <span>on <x-link :href="route('agents.show', $job->agent)">{{ $job->agent->name }}</x-link></span>
                                         <span>after {{ $job->started_at->diffForHumans($job->finished_at, \Carbon\CarbonInterface::DIFF_ABSOLUTE) }}</span>
                                     @endif
                                 </div>
