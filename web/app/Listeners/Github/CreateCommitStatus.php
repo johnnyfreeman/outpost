@@ -19,7 +19,7 @@ class CreateCommitStatus implements ShouldQueue
 
         $response = Http::post("https://api.github.com/repos/johnnyfreeman/bilbo/statuses/{$ref}", [
             "state" => "success",
-            "target_url" => route('pipeline.show', ['pipeline' => $pipelineId]),
+            "target_url" => route('pipelines.show', ['pipeline' => $pipelineId]),
             "description" => "The pipeline job finished!",
             "context" => "{$pipelineName} / {$pipelineStepName}",
         ]);
