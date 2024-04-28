@@ -15,6 +15,8 @@ class PipelineEvent extends Model
 
     protected $fillable = [
         'description',
+        'url',
+        'ref',
     ];
 
     public function pipeline(): BelongsTo

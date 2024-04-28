@@ -18,7 +18,19 @@ class ProcessGithubWebhookJob extends ProcessWebhookJob
             GithubSetting::with('pipeline.steps')->where('trigger_on_push', true)->chunkById(500, function ($settings) use ($payload) {
                 /** @var \App\Models\GithubSetting */
                 foreach ($settings as $setting) {
-                    $setting->pipeline->run($payload->get('head_commit.url'));
+                    /** @var \App\Models\Pipeline */
+                    $pipeline = $setting->pipeline;
+                    
+                    /** @var \App\Models\PipelineEvent */
+                    $event = $pipeline->events()->create([
+                        'description' => $payload->get('head_commit.message'),
+                        'url' => $payload->get('head_commit.url'),
+                        'ref' => $payload->get('head_commit.id'),
+                    ]);
+
+                    $pipeline->steps->map(fn ($step) => $step->jobs()->create([
+                        'pipeline_event_id' => $event->getKey(),
+                    ]));
                 }
             });
         }
