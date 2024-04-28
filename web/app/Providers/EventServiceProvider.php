@@ -21,6 +21,11 @@ class EventServiceProvider extends ServiceProvider
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
             \SocialiteProviders\GitHub\GitHubExtendSocialite::class.'@handle',
         ],
+        \App\Events\PipelineJobReserved::class => [],
+        \App\Events\PipelineJobStarted::class => [],
+        \App\Events\PipelineJobFinished::class => [
+            \App\Listeners\Github\CreateCommitStatus::class,
+        ],
     ];
 
     /**
