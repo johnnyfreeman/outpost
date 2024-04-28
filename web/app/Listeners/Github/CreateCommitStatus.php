@@ -38,21 +38,35 @@ class CreateCommitStatus implements ShouldQueue
 
     protected function getJWT(): string
     {
-        return JWT::encode([
+        $jwt = JWT::encode([
             'iss' => config('services.github.id'),
             'iat' => now(),
             'exp' => now()->addMinutes(5),
         ], config('services.github.private_key'), 'RS256');
+
+        Log::debug('Generating JWT', [
+            'iss' => config('services.github.id'),
+            'iat' => now(),
+            'exp' => now()->addMinutes(5),
+            'private_key' => config('services.github.private_key'),
+        ]);
+
+        return $jwt;
     }
 
     protected function getAccessToken(): string
     {
-        if ($token = Cache::get('github:access_token')) {
+        if (! empty($token = Cache::get('github:access_token'))) {
             return $token;
         }
 
-        $response = Http::withToken($this->getJWT())
+        $response = Http::withToken($jwt = $this->getJWT())
             ->post("https://api.github.com/app/installations/44973831/access_tokens");
+
+        Log::debug('Generating GitHub access token', [
+            'jwt' => $jwt,
+            'response' => $response,
+        ]);
 
         Cache::put(
             'github:access_token',
