@@ -42,6 +42,7 @@ class Pipeline extends Model
 
     }
 
+    /** @return Collection<PipelineJob> */
     public function run(string $description = null): Collection
     {
         $event = $this->events()->create([
