@@ -2,8 +2,8 @@
 
 namespace App\Highlighter;
 
-use Tempest\Highlight\IsPattern;
 use Tempest\Highlight\Pattern;
+use Tempest\Highlight\IsPattern;
 use Tempest\Highlight\Tokens\TokenType;
 
 final readonly class WarningPattern implements Pattern

@@ -1,9 +1,9 @@
 <?php
 
+use Tempest\Highlight\Language;
 use App\Highlighter\CargoLanguage;
 use Illuminate\Support\HtmlString;
 use Tempest\Highlight\Highlighter;
-use Tempest\Highlight\Language;
 
 function highlight(string|null $code, string|Language $language): HtmlString
 {
@@ -12,7 +12,7 @@ function highlight(string|null $code, string|Language $language): HtmlString
     }
 
     $highlighter = (new Highlighter)
-        ->addLanguage(new CargoLanguage());
+        ->addLanguage(new CargoLanguage);
 
     return new HtmlString(
         $highlighter->parse($code, $language),

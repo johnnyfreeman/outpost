@@ -3,10 +3,9 @@
 namespace App\Listeners\Github;
 
 use App\Events\PipelineJobFinished;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CreateCommitStatus implements ShouldQueue
 {

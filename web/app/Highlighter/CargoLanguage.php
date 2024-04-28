@@ -3,7 +3,6 @@
 namespace App\Highlighter;
 
 use Tempest\Highlight\Languages\Base\BaseLanguage;
-use Tempest\Highlight\Languages\Php\Patterns\KeywordPattern;
 
 class CargoLanguage extends BaseLanguage
 {
@@ -11,12 +10,12 @@ class CargoLanguage extends BaseLanguage
     {
         return 'cargo';
     }
-    
+
     public function getAliases(): array
     {
         return [];
     }
-    
+
     public function getInjections(): array
     {
         return [
