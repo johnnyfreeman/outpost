@@ -57,7 +57,7 @@ class CreateCommitStatus implements ShouldQueue
 
     protected function getAccessToken(): string
     {
-        if (! is_string($token = Cache::get('github:access_token'))) {
+        if (is_string($token = Cache::get('github:access_token'))) {
             return $token;
         }
 
