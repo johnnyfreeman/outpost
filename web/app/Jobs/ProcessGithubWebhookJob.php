@@ -21,7 +21,6 @@ class ProcessGithubWebhookJob extends ProcessWebhookJob
                     /** @var \App\Models\Pipeline */
                     $pipeline = $setting->pipeline;
                     
-                    /** @var \App\Models\PipelineEvent */
                     $event = $pipeline->events()->create([
                         'description' => $payload->pluck('head_commit.message'),
                         'url' => $payload->pluck('head_commit.url'),
