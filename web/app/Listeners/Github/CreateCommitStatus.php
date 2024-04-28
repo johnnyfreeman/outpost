@@ -2,12 +2,13 @@
 
 namespace App\Listeners\Github;
 
-use App\Events\PipelineJobFinished;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Carbon;
+use App\Events\PipelineJobFinished;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CreateCommitStatus implements ShouldQueue
 {
@@ -46,8 +47,8 @@ class CreateCommitStatus implements ShouldQueue
 
         Log::debug('Generating JWT', [
             'iss' => config('services.github.id'),
-            'iat' => now(),
-            'exp' => now()->addMinutes(5),
+            'iat' => now()->timestamp,
+            'exp' => now()->addMinutes(5)->timestamp,
             'private_key' => config('services.github.private_key'),
         ]);
 
@@ -56,7 +57,7 @@ class CreateCommitStatus implements ShouldQueue
 
     protected function getAccessToken(): string
     {
-        if (! empty($token = Cache::get('github:access_token'))) {
+        if (! is_string($token = Cache::get('github:access_token'))) {
             return $token;
         }
 
@@ -71,7 +72,7 @@ class CreateCommitStatus implements ShouldQueue
         Cache::put(
             'github:access_token',
             $token = $response->json('token'),
-            $response->json('expires_at'),
+            new Carbon($response->json('expires_at')),
         );
 
         return $token;
