@@ -10,14 +10,14 @@ use App\Http\Integrations\Github\Requests\CreateCommitStatusRequest;
 
 class CreateCommitStatus implements ShouldQueue
 {
-    public function handle(PipelineJobFinished $event, GithubConnector $github): void
+    public function handle(PipelineJobFinished $event): void
     {
         $ref = data_get($event, 'job.event.ref');
         $pipelineId = data_get($event, 'job.event.pipeline.id');
         $pipelineName = data_get($event, 'job.event.pipeline.name');
         $pipelineStepName = data_get($event, 'job.step.name');
 
-        $github->send(new CreateCommitStatusRequest(
+        app(GithubConnector::class)->send(new CreateCommitStatusRequest(
             owner: 'johnnyfreeman',
             repo: 'bilbo',
             ref: $ref,
