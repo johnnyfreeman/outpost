@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Pipeline;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class PipelineStepFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'pipeline_id' => Pipeline::factory(),
+            'name' => fake()->word(),
         ];
     }
 }

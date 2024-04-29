@@ -45,7 +45,7 @@ impl Api {
     pub async fn get_next_job(&self) -> anyhow::Result<reqwest::Response> {
         Ok(self
             .client
-            .get(format!("{}/pipeline-jobs/next", self.url))
+            .post(format!("{}/pipeline-jobs/reserve", self.url))
             .bearer_auth(self.token.clone())
             .send()
             .await?)
@@ -68,7 +68,7 @@ impl Api {
             .post(format!("{}/agents/token", self.url,))
             .json(&json!({
                 "agent_id":self.id,
-                "token_name":"primary",
+                "token_name":"bearer",
             }))
             .send()
             .await?;
@@ -85,7 +85,7 @@ pub enum ApiAction {
     GetNextPipelineJob {
         tx: oneshot::Sender<Option<PipelineJob>>,
     },
-    UpdatePipelineJob(Box<PipelineJob>),
+    UpdatePipelineJob(PipelineJob),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -107,7 +107,7 @@ pub struct PipelineJob {
     pub exit_code: Option<i32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub reserved_at: DateTime<Utc>,
+    pub reserved_at: Option<DateTime<Utc>>,
     pub started_at: Option<DateTime<Utc>>,
     pub finished_at: Option<DateTime<Utc>>,
 }
@@ -126,6 +126,8 @@ pub struct PipelineStep {
     pub id: String,
     pub pipeline_id: String,
     pub name: String,
+    pub env: Option<String>,
+    pub current_directory: Option<String>,
     pub script: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

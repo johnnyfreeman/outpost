@@ -15,6 +15,7 @@
     "@tailwindcss/typography": "^0.5.9",
     "autoprefixer": "^10.4.16",
     "cross-env": "^7.0.3",
+    "htmx.org": "^1.9.12",
     "laravel-echo": "^1.15.0",
     "laravel-vite-plugin": "^0.8.0",
     "postcss": "^8.4.31",

@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('agents', function (Blueprint $table) {
@@ -32,7 +31,9 @@ return new class extends Migration
             $table->ulid('id')->unique();
             $table->foreignUlid('pipeline_id')->references('id')->on('pipelines');
             $table->string('name');
-            $table->longText('script')->nullable();
+            $table->longText('env')->nullable();
+            $table->string('current_directory')->nullable();
+            $table->longText('script');
             $table->timestampsTz();
         });
 

@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Pipeline;
 use App\Models\PipelineStep;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PipelineController extends Controller
 {
@@ -26,7 +27,19 @@ class PipelineController extends Controller
             'description' => ['nullable'],
         ]);
 
-        $pipeline = Pipeline::create($data);
+        $pipeline = DB::transaction(function () use ($request, $data) {
+            $pipeline = Pipeline::create($data);
+
+            $pipeline->steps()->createMany([
+                // ...
+            ]);
+
+            $pipeline->githubSettings()->create([
+                'trigger_on_push' => $request->boolean('trigger_on_push'),
+            ]);
+
+            return $pipeline;
+        });
 
         return to_route('pipelines.show', $pipeline)
             ->with('success', [
@@ -44,6 +57,10 @@ class PipelineController extends Controller
 
         $pipeline->fill($data)->save();
 
+        $pipeline->githubSettings()->updateOrCreate([], [
+            'trigger_on_push' => $request->boolean('trigger_on_push'),
+        ]);
+
         return to_route('pipelines.show', $pipeline)
             ->with('success', [
                 'pipeline updated!',
@@ -53,11 +70,7 @@ class PipelineController extends Controller
 
     public function run(Request $request, Pipeline $pipeline)
     {
-        $event = $pipeline->events()->create();
-
-        $pipeline->steps->map(fn ($step) => $step->jobs()->create([
-            'pipeline_event_id' => $event->getKey(),
-        ]));
+        $pipeline->run();
 
         return to_route('pipelines.show', $pipeline)
             ->with('success', [
@@ -102,6 +115,7 @@ class PipelineController extends Controller
                     $query->orderBy('id', 'desc');
                 },
                 'jobs.step',
+                'jobs.agent',
             ])->orderByDesc('id')->paginate(),
         ]);
     }

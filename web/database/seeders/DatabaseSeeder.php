@@ -36,14 +36,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $pipeline->steps()->create([
-            'name' => 'Run tests',
-            'script' => <<<'SCRIPT'
-                cd ../web
-                php artisan test
-                SCRIPT,
-        ]);
-
-        $pipeline->steps()->create([
             'name' => 'Info',
             'script' => <<<'SCRIPT'
                 pwd
@@ -53,16 +45,16 @@ class DatabaseSeeder extends Seeder
 
         $pipeline->steps()->create([
             'name' => 'Format code',
+            'current_directory' => '/home/john/projects/bilbo/web',
             'script' => <<<'SCRIPT'
-                cd ../web
                 vendor/bin/pint
                 SCRIPT,
         ]);
 
         $pipeline->steps()->create([
             'name' => 'NPM (re)Install',
+            'current_directory' => '/home/john/projects/bilbo/web',
             'script' => <<<'SCRIPT'
-                cd ../web
                 rm -rf node_modules
                 npm install
                 SCRIPT,
