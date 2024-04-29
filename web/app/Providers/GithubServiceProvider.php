@@ -7,9 +7,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use App\Http\Integrations\Github\GithubConnector;
+use Illuminate\Contracts\Support\DeferrableProvider;
 use App\Http\Integrations\Github\Requests\CreateAppInstallionAccessTokenRequest;
 
-class GithubServiceProvider extends ServiceProvider
+class GithubServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function register(): void
     {
@@ -18,14 +19,16 @@ class GithubServiceProvider extends ServiceProvider
                 return new GithubConnector($token);
             }
 
-            $response = (new CreateAppInstallionAccessTokenRequest(
-                jwt: $jwt = JWT::encode([
+            $connector = new GithubConnector(
+                token: $jwt = JWT::encode([
                     'iss' => $app['config']->get('services.github.id'),
                     'iat' => now()->timestamp,
                     'exp' => now()->addMinutes(5)->timestamp,
                 ], config('services.github.private_key'), 'RS256'),
+            );
+            $response = $connector->send(new CreateAppInstallionAccessTokenRequest(
                 installation: 44973831,
-            ))->send();
+            ));
 
             Log::debug('Generating GitHub access token', [
                 'jwt' => $jwt,
@@ -40,5 +43,10 @@ class GithubServiceProvider extends ServiceProvider
 
             return new GithubConnector($token);
         });
+    }
+
+    public function provides(): array
+    {
+        return [GithubConnector::class];
     }
 }
