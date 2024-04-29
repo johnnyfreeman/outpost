@@ -34,11 +34,11 @@ class GithubServiceProvider extends ServiceProvider
 
             $app['cache']->put(
                 'github:access_token',
-                $token = $response->json('token'),
-                new Carbon($response->json('expires_at')),
+                $token = (string) $response->json('token'),
+                new Carbon((string) $response->json('expires_at')),
             );
 
-            return $token;
+            return new GithubConnector($token);
         });
     }
 }
