@@ -3,7 +3,7 @@ use crate::{
 };
 use anyhow::Result;
 use std::time::Duration;
-use tokio::task::JoinHandle;
+use tokio::{task::JoinHandle, time};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 
 pub struct Worker {
@@ -39,22 +39,19 @@ impl Worker {
         self.tracker.spawn(async move {
             loop {
                 let queue = queue.clone();
+                let mut interval = time::interval(Duration::from_secs(1));
+                interval.tick().await;
 
                 tokio::select! {
                     job = queue.next() => {
                         match job {
-                            Ok(job) => {
-                                match job {
-                                    Some(job) => {
-                                        let progress = progress.clone();
-                                        let tracker = tracker.clone();
+                            Ok(Some(job)) => {
+                                let progress = progress.clone();
+                                let tracker = tracker.clone();
 
-                                        tracker.spawn(process_job(queue, job, progress));
-                                    }
-                                    None => {
-                                        tokio::time::sleep(Duration::from_secs(3)).await;
-                                    }
-                                }
+                                tracker.spawn(process_job(queue, job, progress));
+                            }
+                            Ok(None) => {
                             }
                             Err(err) => {
                                 eprintln!("Queue failed getting next job: {}", err);
