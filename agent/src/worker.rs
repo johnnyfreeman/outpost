@@ -45,18 +45,13 @@ impl Worker {
                 tokio::select! {
                     job = queue.next() => {
                         match job {
-                            Ok(job) => {
-                                match job {
-                                    Some(job) => {
-                                        let progress = progress.clone();
-                                        let tracker = tracker.clone();
+                            Ok(Some(job)) => {
+                                let progress = progress.clone();
+                                let tracker = tracker.clone();
 
-                                        tracker.spawn(process_job(queue, job, progress));
-                                    }
-                                    None => {
-                                        tokio::time::sleep(Duration::from_secs(3)).await;
-                                    }
-                                }
+                                tracker.spawn(process_job(queue, job, progress));
+                            }
+                            Ok(None) => {
                             }
                             Err(err) => {
                                 eprintln!("Queue failed getting next job: {}", err);
