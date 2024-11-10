@@ -1,6 +1,11 @@
-# Outpost
+<div align="center">
+  <h1><code>outpost</code></h1>
 
-A simple, remote agent to make CI/CD a breeze.
+  <p><b>A simple, CI/CD web interface that listens to webhooks from Github. Remotely installed agents can then run scripts on your target machines. No yaml syntax to learn; just use linux commands you already know.</b></p>
+</div>
+
+> [!WARNING]
+> **This project is in its early stages and may undergo many breaking changes in the future.**
 
 ## Web Interface
 
